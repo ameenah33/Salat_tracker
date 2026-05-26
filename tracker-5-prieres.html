@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="5 Prières">
+<title>Challenge 5 Prières — 30 Jours</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f0e;
+    --bg2: #141714;
+    --bg3: #1c201b;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --text: #f0ede6;
+    --text2: #a09a8e;
+    --text3: #6b6560;
+    --green: #7eb87a;
+    --green-bg: rgba(126,184,122,0.12);
+    --green-dark: #4a7a47;
+    --red: #c26b6b;
+    --red-bg: rgba(194,107,107,0.12);
+    --amber: #c9a55a;
+    --amber-bg: rgba(201,165,90,0.1);
+    --gold: #d4af6e;
+  }
+
+  html { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; }
+
+  body {
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    padding: 0 0 6rem;
+    background: var(--bg);
+  }
+
+  /* HEADER */
+  .header {
+    padding: 3rem 1.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(126,184,122,0.08) 0%, transparent 70%);
+  }
+  .header-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+  }
+  .header-sub {
+    font-size: 13px;
+    color: var(--text3);
+    font-weight: 300;
+  }
+
+  /* STATS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    background: var(--bg);
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .stat-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: var(--text);
+    line-height: 1;
+  }
+  .stat-val.green { color: var(--green); }
+  .stat-val.gold { color: var(--gold); }
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.05em;
+  }
+
+  /* STREAK */
+  .streak-bar {
+    margin: 1rem 1.25rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .streak-icon { font-size: 24px; }
+  .streak-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--gold);
+    min-width: 40px;
+  }
+  .streak-info { flex: 1; }
+  .streak-label { font-size: 12px; color: var(--text2); }
+  .streak-msg { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 1.5rem 1.5rem 0.75rem;
+  }
+
+  /* CALENDAR */
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    padding: 0 1rem 1rem;
+  }
+  .cal-wday {
+    text-align: center;
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 0.05em;
+    padding-bottom: 2px;
+  }
+  .cal-cell {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    font-size: 11px;
+    color: var(--text3);
+    font-weight: 500;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .cal-cell:active { transform: scale(0.93); }
+  .cal-cell.perfect {
+    background: var(--green-bg);
+    border-color: var(--green-dark);
+    color: var(--green);
+  }
+  .cal-cell.partial {
+    background: var(--amber-bg);
+    border-color: rgba(201,165,90,0.3);
+    color: var(--amber);
+  }
+  .cal-cell.failed {
+    background: var(--red-bg);
+    border-color: rgba(194,107,107,0.3);
+    color: var(--red);
+  }
+  .cal-cell.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold);
+  }
+  .cal-dot-row {
+    display: flex;
+    gap: 1px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
+  }
+  .cal-micro {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--border2);
+  }
+  .cal-micro.g { background: var(--green); }
+  .cal-micro.r { background: var(--red); }
+  .cal-micro.z { border-radius: 1px; background: var(--amber); }
+
+  /* DETAIL PANEL */
+  .detail {
+    margin: 0 1rem 1rem;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .detail-header {
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .detail-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: var(--text);
+  }
+  .close-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .close-btn:active { background: var(--border2); }
+
+  .prayer-list { padding: 0.5rem 0; }
+  .prayer-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .prayer-item:last-child { border-bottom: none; }
+  .prayer-left { display: flex; align-items: center; gap: 0.5rem; }
+  .prayer-name { font-size: 14px; color: var(--text); }
+  .fajr-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--amber-bg);
+    color: var(--amber);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .prayer-btns { display: flex; gap: 6px; }
+  .pbtn {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    color: var(--text2);
+    transition: all 0.12s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .pbtn:active { transform: scale(0.95); }
+  .pbtn.active-done { background: var(--green-bg); border-color: var(--green-dark); color: var(--green); }
+  .pbtn.active-missed { background: var(--red-bg); border-color: rgba(194,107,107,0.4); color: var(--red); }
+
+  .zikr-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .zikr-left { font-size: 13px; color: var(--text2); }
+  .zikr-toggle {
+    width: 44px; height: 24px;
+    border-radius: 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .zikr-toggle.on { background: var(--green-dark); border-color: var(--green); }
+  .zikr-toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--text3);
+    transition: transform 0.2s, background 0.2s;
+  }
+  .zikr-toggle.on::after { transform: translateX(20px); background: var(--green); }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 1rem;
+    padding: 0 1.5rem 1rem;
+    flex-wrap: wrap;
+  }
+  .leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); }
+  .leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .leg-sq { width: 8px; height: 8px; border-radius: 1px; }
+
+  /* BOTTOM NOTE */
+  .bottom-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text3);
+    padding: 1rem 1.5rem 2rem;
+    font-style: italic;
+    font-family: 'Playfair Display', serif;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">Challenge personnel</div>
+  <div class="header-title">5 Prières · 30 Jours</div>
+  <div class="header-sub">Fajr · Dhuhr · Asr · Maghrib · Isha</div>
+</div>
+
+<div class="stats" id="stats-grid"></div>
+
+<div class="streak-bar" id="streak-bar"></div>
+
+<div class="section-title">Calendrier</div>
+
+<div class="cal-grid" id="cal-grid"></div>
+
+<div id="detail-wrap"></div>
+
+<div class="legend">
+  <div class="leg"><div class="leg-dot" style="background:var(--green)"></div> Parfait</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div> Partiel</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--red)"></div> Manqué</div>
+  <div class="leg"><div class="leg-sq" style="background:var(--amber)"></div> Zikrs</div>
+</div>
+
+<div class="bottom-note">« Et accomplis la prière pour mon souvenir. » — Ṭāhā 14</div>
+
+<script>
+const PRAYERS = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+const DAYS = 30;
+const WDAYS = ['L','M','M','J','V','S','D'];
+
+let data = {};
+try { data = JSON.parse(localStorage.getItem('5p30j') || '{}'); } catch(e) {}
+
+let selectedDay = null;
+
+function save() {
+  localStorage.setItem('5p30j', JSON.stringify(data));
+  render();
+}
+
+function dk(d) { return 'd' + d; }
+
+function ps(day, prayer) {
+  return (data[dk(day)] && data[dk(day)].prayers && data[dk(day)].prayers[prayer]) || 'none';
+}
+
+function setPrayer(day, prayer, state) {
+  if (!data[dk(day)]) data[dk(day)] = { prayers: {}, zikr: false };
+  const cur = data[dk(day)].prayers[prayer] || 'none';
+  data[dk(day)].prayers[prayer] = cur === state ? 'none' : state;
+  save();
+}
+
+function toggleZikr(day) {
+  if (!data[dk(day)]) data[dk(day)] = { prayers: {}, zikr: false };
+  data[dk(day)].zikr = !data[dk(day)].zikr;
+  save();
+}
+
+function dayStatus(day) {
+  const allDone = PRAYERS.every(p => ps(day, p) === 'done');
+  const anyDone = PRAYERS.some(p => ps(day, p) === 'done');
+  const anyMissed = PRAYERS.some(p => ps(day, p) === 'missed');
+  const zk = data[dk(day)] && data[dk(day)].zikr;
+  if (allDone && zk) return 'perfect';
+  if (allDone && !zk) return 'partial';
+  if (anyDone || anyMissed) return 'partial';
+  return 'empty';
+}
+
+function calcStreak() {
+  let s = 0;
+  for (let d = DAYS - 1; d >= 0; d--) {
+    if (dayStatus(d) === 'perfect') s++;
+    else break;
+  }
+  return s;
+}
+
+function calcStats() {
+  let perfect = 0, done = 0, zikrDays = 0;
+  for (let d = 0; d < DAYS; d++) {
+    if (dayStatus(d) === 'perfect') perfect++;
+    PRAYERS.forEach(p => { if (ps(d, p) === 'done') done++; });
+    if (data[dk(d)] && data[dk(d)].zikr) zikrDays++;
+  }
+  return { perfect, done, zikrDays, streak: calcStreak() };
+}
+
+function render() {
+  const s = calcStats();
+
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat"><div class="stat-val green">${s.perfect}</div><div class="stat-lbl">Jours parfaits</div></div>
+    <div class="stat"><div class="stat-val">${s.done}</div><div class="stat-lbl">Prières accomplies</div></div>
+    <div class="stat"><div class="stat-val gold">${s.zikrDays}</div><div class="stat-lbl">Jours de zikrs</div></div>
+    <div class="stat"><div class="stat-val">${Math.round((s.done / (DAYS * 5)) * 100)}%</div><div class="stat-lbl">Taux de réussite</div></div>
+  `;
+
+  const msgs = ['Commence aujourd\'hui !','Belle progression','Tu es dans le flow','Mashallah, continue !','Subhan Allah !'];
+  const msg = s.streak === 0 ? msgs[0] : s.streak < 5 ? msgs[1] : s.streak < 15 ? msgs[2] : s.streak < 25 ? msgs[3] : msgs[4];
+  document.getElementById('streak-bar').innerHTML = `
+    <div class="streak-icon">🌙</div>
+    <div class="streak-num">${s.streak}</div>
+    <div class="streak-info">
+      <div class="streak-label">jours consécutifs parfaits</div>
+      <div class="streak-msg">${msg}</div>
+    </div>
+  `;
+
+  // Calendar
+  const cal = document.getElementById('cal-grid');
+  let html = WDAYS.map(w => `<div class="cal-wday">${w}</div>`).join('');
+
+  // Find first day of week offset
+  // We just fill from day 1 linearly
+  for (let d = 0; d < DAYS; d++) {
+    const st = dayStatus(d);
+    const cls = st === 'perfect' ? 'perfect' : st === 'partial' ? 'partial' : '';
+    const missed = PRAYERS.some(p => ps(d, p) === 'missed') && st !== 'perfect';
+    const finalCls = missed && st !== 'perfect' ? 'failed' : cls;
+    const sel = selectedDay === d ? 'selected' : '';
+
+    const dots = PRAYERS.map(p => {
+      const pst = ps(d, p);
+      return `<div class="cal-micro ${pst === 'done' ? 'g' : pst === 'missed' ? 'r' : ''}"></div>`;
+    }).join('');
+    const zk = data[dk(d)] && data[dk(d)].zikr;
+    const zDot = `<div class="cal-micro z ${zk ? '' : 'hidden'}" style="${zk ? '' : 'opacity:0.2'}"></div>`;
+
+    html += `<div class="cal-cell ${finalCls} ${sel}" onclick="selectDay(${d})">
+      <span>${d + 1}</span>
+      <div class="cal-dot-row">${dots}${zDot}</div>
+    </div>`;
+  }
+  cal.innerHTML = html;
+
+  // Detail
+  renderDetail();
+}
+
+function renderDetail() {
+  const wrap = document.getElementById('detail-wrap');
+  if (selectedDay === null) { wrap.innerHTML = ''; return; }
+  const d = selectedDay;
+  let rows = PRAYERS.map(p => {
+    const st = ps(d, p);
+    return `<div class="prayer-item">
+      <div class="prayer-left">
+        <div class="prayer-name">${p}</div>
+        ${p === 'Fajr' ? '<div class="fajr-tag">à l\'heure</div>' : ''}
+      </div>
+      <div class="prayer-btns">
+        <button class="pbtn ${st === 'done' ? 'active-done' : ''}" onclick="setPrayer(${d},'${p}','done')">✓</button>
+        <button class="pbtn ${st === 'missed' ? 'active-missed' : ''}" onclick="setPrayer(${d},'${p}','missed')">✗</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const zk = data[dk(d)] && data[dk(d)].zikr;
+  wrap.innerHTML = `<div class="detail">
+    <div class="detail-header">
+      <div class="detail-title">Jour ${d + 1}</div>
+      <button class="close-btn" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="prayer-list">${rows}</div>
+    <div class="zikr-item">
+      <div class="zikr-left">🤲 Zikrs quotidiens</div>
+      <div class="zikr-toggle ${zk ? 'on' : ''}" onclick="toggleZikr(${d})"></div>
+    </div>
+  </div>`;
+}
+
+window.selectDay = function(d) {
+  selectedDay = selectedDay === d ? null : d;
+  render();
+  if (selectedDay !== null) {
+    setTimeout(() => document.getElementById('detail-wrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+  }
+};
+window.closeDetail = function() { selectedDay = null; render(); };
+window.setPrayer = function(d, p, st) { setPrayer(d, p, st); renderDetail(); render(); };
+window.toggleZikr = function(d) { toggleZikr(d); renderDetail(); };
+
+render();
+</script>
+</body>
+</html>
