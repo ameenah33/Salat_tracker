@@ -483,8 +483,8 @@ function renderDetail() {
         ${p === 'Fajr' ? '<div class="fajr-tag">à l\'heure</div>' : ''}
       </div>
       <div class="prayer-btns">
-        <button class="pbtn ${st === 'done' ? 'active-done' : ''}" onclick="setPrayer(${d},'${p}','done')">✓</button>
-        <button class="pbtn ${st === 'missed' ? 'active-missed' : ''}" onclick="setPrayer(${d},'${p}','missed')">✗</button>
+        <button class="pbtn ${st === 'done' ? 'active-done' : ''}" onclick="markPrayer(${d},'${p}','done')">✓</button>
+        <button class="pbtn ${st === 'missed' ? 'active-missed' : ''}" onclick="markPrayer(${d},'${p}','missed')">✗</button>
       </div>
     </div>`;
   }).join('');
@@ -511,8 +511,8 @@ window.selectDay = function(d) {
   }
 };
 window.closeDetail = function() { selectedDay = null; render(); };
-window.setPrayer = function(d, p, st) { setPrayer(d, p, st); renderDetail(); render(); };
-window.toggleZikr = function(d) { toggleZikr(d); renderDetail(); };
+window.markPrayer = function(d, p, st) { if (!data[dk(d)]) data[dk(d)] = { prayers: {}, zikr: false }; const cur = data[dk(d)].prayers[p] || "none"; data[dk(d)].prayers[p] = cur === st ? "none" : st; save(); renderDetail(); };
+window.toggleZikr = function(d) { if (!data[dk(d)]) data[dk(d)] = { prayers: {}, zikr: false }; data[dk(d)].zikr = !data[dk(d)].zikr; save(); renderDetail(); };
 
 render();
 </script>
